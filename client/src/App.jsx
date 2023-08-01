@@ -1,7 +1,5 @@
 function App() {
   return (
-    <div>App</div>
+    <div className="font-Nunito">App</div>
   )
 }
-
-export default App

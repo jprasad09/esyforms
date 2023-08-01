@@ -4,6 +4,9 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 
+const formRoutes = require('./routes/form')
+const responseRoutes = require('./routes/response')
+
 // express app
 const app = express()
 
@@ -11,7 +14,11 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-// handling not found routes and errors
+// routes
+app.use('/api/forms', formRoutes)
+app.use('/api/responses', responseRoutes)
+
+//handling not found routes and errors
 app.use((req, res, next) => {
   let err = new Error('Not Found')
   err.status = 404
@@ -37,4 +44,4 @@ mongoose.connect(process.env.MONGO_URI)
   })
   .catch((err) => {
     console.log(err)
-})
+  }) 
