@@ -8,7 +8,8 @@ const categorizeAnswerSchema = new mongoose.Schema({
         category: { type: String, required: true },
         options: [
           {
-            option: { type: String, required: true },
+            label: { type: String, required: true },
+            _id: { type: mongoose.Schema.Types.ObjectId }
           }
         ],
     }
@@ -21,7 +22,10 @@ const clozeAnswerSchema = new mongoose.Schema({
   selections: [
     {
       blankIndex: { type: Number, required: true },
-      optionIndex: { type: Number, required: true },
+      option: { 
+        label: { type: String, required: true },
+        _id: { type: mongoose.Schema.Types.ObjectId, required: true }
+      },
     },
   ],
 })

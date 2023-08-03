@@ -3,7 +3,7 @@ const Form = require('../models/formModel')
 
 // get all forms
 const getForms = async (req, res) => {
-  const forms = await Form.find({}).sort({createdAt: -1})
+  const forms = await Form.find( {}, { title: 1, fields: 1, createdAt: 1 } ).sort({createdAt: -1})
 
   res.status(200).json(forms)
 }

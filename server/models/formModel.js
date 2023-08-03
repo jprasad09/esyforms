@@ -5,18 +5,29 @@ const categorizeFieldSchema = new mongoose.Schema({
     categories: [
         {
             label: { type: String, required: true },
-            options: [
+            correctOptions: [
                 {
                     label: { type: String, required: true },
                 }
             ],
         }
     ],
+    options: [
+        {
+            label: { type: String, required: true }
+        }
+    ]
 })
 
 // Define the schema for the cloze form field
 const clozeFieldSchema = new mongoose.Schema({
     paragraph: { type: String, required: true },
+    blanks: [
+        {
+            label: { type: String, required: true },
+            index: { type: Number, required: true }
+        }
+    ],
     options: [
         {
             label: { 
@@ -65,33 +76,27 @@ const formFieldSchema = new mongoose.Schema({
   },
   
   // For "categorize" field type, use the categorizeFieldSchema schema
-  categorizeData: {
-    categorizeField: { 
-        type: categorizeFieldSchema, 
-        required: function () {
-            return this.type === 'categorize'
-        }
-    },
+  categorizeField: { 
+      type: categorizeFieldSchema, 
+      required: function () {
+          return this.type === 'categorize'
+      }
   },
 
   // For "cloze" field type, use the clozeFieldSchema schema
-  clozeData: {
-    clozeField: { 
-        type: clozeFieldSchema, 
-        required: function () {
-            return this.type === 'cloze';
-        }
-    },
+  clozeField: { 
+      type: clozeFieldSchema, 
+      required: function () {
+          return this.type === 'cloze';
+      }
   },
 
   // For "comprehension" field type, use the comprehensionFieldSchema schema
-  comprehensionData: {
-    comprehensionField: { 
-        type: comprehensionFieldSchema, 
-        required: function () {
-            return this.type === 'comprehension';
-        }
-    },
+  comprehensionField: { 
+      type: comprehensionFieldSchema, 
+      required: function () {
+          return this.type === 'comprehension';
+      }
   },
 })
 
@@ -102,6 +107,9 @@ const formSchema = new mongoose.Schema({
     required: true 
   },
   formImg: {
+    type: String
+  },
+  formDescription: {
     type: String
   },
   fields: { 

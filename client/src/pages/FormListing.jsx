@@ -25,7 +25,7 @@ const FormListing = () => {
 
             <section className='flex items-center justify-center my-10'>
                 <button onClick={() => navigate('form/create')} 
-                    className='rounded-lg bg-cyan-100 hover:bg-cyan-200 text-lg font-semibold px-5 py-1 transition duration-700'>
+                    className='btn-primary'>
                     Create Form
                 </button>
             </section>
