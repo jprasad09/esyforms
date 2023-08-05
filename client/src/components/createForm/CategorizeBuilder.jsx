@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 
 import { addQuestion, setQuestionsValidity } from '../../store/formBuilderSlice'
 
-const CategorizeBuilder = ({ uniqueId, index }) => {
+const CategorizeBuilder = ({ uniqueId }) => {
 
   const [questionTitle, setQuestionTitle] = useState('')
   const [categories, setCategories] = useState([{ label: '' }, { label: '' }])
