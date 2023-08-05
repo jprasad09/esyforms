@@ -5,7 +5,21 @@
 @tailwind utilities;
 
 @layer components {
-    .btn-primary {
-      @apply rounded-lg bg-cyan-200 hover:bg-cyan-300 text-lg font-semibold px-5 py-1 transition duration-700;
-    }
+  .btn-primary{
+    @apply rounded-lg bg-cyan-200 hover:bg-cyan-300 text-lg font-semibold px-5 py-1 transition duration-700;
+  }
+
+  .input-file{
+    @apply block w-full text-sm text-slate-500 
+    file:mr-1 file:py-2 file:px-4
+    file:rounded-full file:border-0
+    file:text-sm file:font-semibold
+    file:bg-violet-50 file:text-violet-700
+    hover:file:bg-violet-100
+  }
+
+  .input-bottom{
+    @apply w-full p-2  pb-1 text-base text-black border-b border-gray-400 outline-none focus:border-cyan-200
+  }
+
 }
