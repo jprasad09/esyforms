@@ -60,7 +60,7 @@ const Question = ({ uniqueId, index, onAddQuestion, onDeleteQuestion, disableDel
                 {
                     questionType && questionType === "Categorize" ? <CategorizeBuilder uniqueId={uniqueId} /> :
                     questionType === "Cloze" ? <ClozeBuilder uniqueId={uniqueId} /> :
-                    questionType === "Comprehension" ? <ComprehensionBuilder uniqueId={uniqueId} /> : null
+                    questionType === "Comprehension" ? <ComprehensionBuilder uniqueId={uniqueId} index={index + 1}/> : null
                 }
             </div>
 

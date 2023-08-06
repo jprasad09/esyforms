@@ -64,7 +64,7 @@ const CreateForm = () => {
     let fields = []
      questions.forEach((question) => {
       allQuestions.forEach((field) => {
-        if(question._id === field.id) fields.push(field.updatedCategorizeField)
+        if(question._id === field.id) fields.push(field.updatedField)
       })
     })
 
@@ -80,6 +80,7 @@ const CreateForm = () => {
         navigate('/')
       }
     }catch(error){
+      console.log(error)
       alert('Error creating form')
     }
 

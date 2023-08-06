@@ -112,7 +112,7 @@ const CategorizeBuilder = ({ uniqueId }) => {
 
       const question = {
         id: uniqueId,
-        updatedCategorizeField: {
+        updatedField: {
           label: questionTitle,
           type: "categorize",
           categorizeField: {

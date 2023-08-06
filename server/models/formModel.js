@@ -65,7 +65,7 @@ const comprehensionFieldSchema = new mongoose.Schema({
 
 // Define the form field schema
 const formFieldSchema = new mongoose.Schema({
-  label: { type: String, required: true },
+  label: { type: String },
   type: {
     type: String,
     enum: ['categorize', 'cloze', 'comprehension'],
