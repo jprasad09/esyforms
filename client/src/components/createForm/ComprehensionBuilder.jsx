@@ -22,7 +22,7 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
 
   const dispatch = useDispatch()
 
-  const handleAddQuestion = (currentQuestionId) => {
+  const handleAddQuestion = (currentQuestionId, id) => {
     const currentQuestionIndex = questions.findIndex(
       (question) => question.questionId === currentQuestionId
     )
@@ -36,9 +36,9 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
     }
 
     setQuestions((prevQuestions) => {
-      const updatedQuestions = [...prevQuestions];
-      updatedQuestions.splice(currentQuestionIndex + 1, 0, newQuestion);
-      return updatedQuestions;
+      const updatedQuestions = [...prevQuestions]
+      updatedQuestions.splice(currentQuestionIndex + 1, 0, newQuestion)
+      return updatedQuestions
     })
   }
 
@@ -66,9 +66,9 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
             options: updatedOptions,
           }
         }
-        return question;
+        return question
       })
-      return updatedQuestions;
+      return updatedQuestions
     })
   }
 
@@ -78,7 +78,7 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
         if (question.questionId === questionId) {
           if (question.options.length <= 2) {
             // Minimum 2 options are required, so prevent deletion
-            return question;
+            return question
           }
 
           const updatedOptions = question.options.filter(
@@ -87,7 +87,7 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
           const updatedAnswer =
             question.answer === question.options[optionIndex].label
               ? ""
-              : question.answer; // Clear the answer if the deleted option was the correct option
+              : question.answer // Clear the answer if the deleted option was the correct option
 
           return {
             ...question,
@@ -95,9 +95,9 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
             answer: updatedAnswer,
           }
         }
-        return question;
+        return question
       })
-      return updatedQuestions;
+      return updatedQuestions
     })
   }
 
@@ -152,6 +152,7 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
     const valid = validateForm()
     if (valid) {
       dispatch(setQuestionsValidity({ id: uniqueId, status: true }))
+
       const question = {
         id: uniqueId,
         updatedField: {
@@ -165,7 +166,7 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
       }
 
       dispatch(addQuestion(question))
-    }else{
+    } else {
       dispatch(setQuestionsValidity({ id: uniqueId, status: false }))
     }
   }, [paragraph, questions])
@@ -190,9 +191,8 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
         <div className="flex flex-col gap-y-2 w-2/3">
           <span>Add a paragraph</span>
           <textarea
-            className={`border-2 ${
-              paragraphError ? "border-red-500" : "border-gray-200"
-            }`}
+            className={`border-2 ${paragraphError ? "border-red-500" : "border-gray-200"
+              }`}
             name="paragraph"
             cols="50"
             rows="10"
@@ -205,175 +205,177 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
         </div>
 
         <div className="flex flex-col gap-y-2">
-          {questions.map((question, id) => (
-            <div
-              key={question.questionId}
-              className="w-2/3 border-2 border-gray-200 rounded-md relative"
-            >
-              <div className="absolute top-2 right-2 flex gap-x-2">
-                <span>
-                  <AiFillPlusCircle
-                    size={20}
-                    color="gray"
-                    className="cursor-pointer"
-                    onClick={() => handleAddQuestion(question.questionId)}
-                  />
-                </span>
-                <span>
-                  <AiFillDelete
-                    size={20}
-                    color="gray"
-                    className="cursor-pointer"
-                    onClick={() => handleDeleteQuestion(question.questionId)}
-                  />
-                </span>
-              </div>
-
-              <div className="m-2 font-medium">{`Question ${index}.${id+1}`}</div>
-
-              <div className="p-10 flex flex-col gap-y-8">
-                <div>
-                  <input
-                    className="input-bottom"
-                    placeholder="Add a question"
-                    type="text"
-                    value={question?.question}
-                    onChange={(e) =>
-                      setQuestions((prevQuestions) => {
-                        const updatedQuestions = prevQuestions.map((q) => {
-                          if (q.questionId === question.questionId) {
-                            return { ...q, question: e.target.value }
-                          }
-                          return q;
-                        });
-                        return updatedQuestions;
-                      })
-                    }
-                  />
-                  {questionErrors[question.questionId] && (
-                    <p className="text-red-500">
-                      {questionErrors[question.questionId]}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-y-2">
-                  {question?.options.map((option, optionIndex) => {
-                    return (
-                      <div
-                        className="flex items-center gap-x-5"
-                        key={`${question.questionId}.${optionIndex}`}
-                      >
-                        <input
-                          className="cursor-pointer"
-                          type="radio"
-                          name={question.questionId}
-                          value={option.label}
-                          checked={option.isCorrect} // Make sure the correct option is checked
-                          onChange={(e) =>
-                            setQuestions((prevQuestions) => {
-                              const updatedQuestions = prevQuestions.map(
-                                (q) => {
-                                  if (q.questionId === question.questionId) {
-                                    const updatedOptions = q.options.map(
-                                      (o, idx) => {
-                                        if (idx === optionIndex) {
-                                          return {
-                                            ...o,
-                                            isCorrect: e.target.checked,
-                                          }
-                                        } else {
-                                          // Uncheck the other options when selecting a new one
-                                          return { ...o, isCorrect: false }
-                                        }
-                                      }
-                                    );
-                                    return {
-                                      ...q,
-                                      options: updatedOptions,
-                                      answer: e.target.checked
-                                        ? option.label
-                                        : q.answer,
-                                    }
-                                  }
-                                  return q
-                                }
-                              )
-                              return updatedQuestions
-                            })
-                          }
-                        />
-                        <input
-                          className="input-bottom w-1/2"
-                          type="text"
-                          value={option.label}
-                          placeholder="Add an option"
-                          onChange={(e) =>
-                            setQuestions((prevQuestions) => {
-                              const updatedQuestions = prevQuestions.map(
-                                (q) => {
-                                  if (q.questionId === question.questionId) {
-                                    const updatedOptions = q.options.map(
-                                      (o, idx) => {
-                                        if (idx === optionIndex) {
-                                          return {
-                                            ...o,
-                                            label: e.target.value,
-                                          }
-                                        }
-                                        return o
-                                      }
-                                    );
-                                    return { ...q, options: updatedOptions }
-                                  }
-                                  return q
-                                }
-                              );
-                              return updatedQuestions
-                            })
-                          }
-                        />
-                        <AiFillDelete
-                          size={17}
-                          color="gray"
-                          className="cursor-pointer"
-                          onClick={() =>
-                            handleDeleteOption(question.questionId, optionIndex)
-                          }
-                        />
-                        {optionErrors[
-                          `${question.questionId}.${optionIndex}`
-                        ] && (
-                          <p className="text-red-500">
-                            {
-                              optionErrors[
-                                `${question.questionId}.${optionIndex}`
-                              ]
-                            }
-                          </p>
-                        )}
-                      </div>
-                    );
-                  })}
-
-                  {question.options.length < 5 && (
+          {questions.map((question, id) => {
+            return (
+              <div
+                key={question.questionId}
+                className="w-2/3 border-2 border-gray-200 rounded-md relative"
+              >
+                <div className="absolute top-2 right-2 flex gap-x-2">
+                  <span>
                     <AiFillPlusCircle
-                      size={17}
+                      size={20}
                       color="gray"
-                      className="cursor-pointer mt-2"
-                      onClick={() => handleAddOption(question.questionId)}
+                      className="cursor-pointer"
+                      onClick={() => handleAddQuestion(question.questionId)}
                     />
-                  )}
+                  </span>
+                  <span>
+                    <AiFillDelete
+                      size={20}
+                      color="gray"
+                      className="cursor-pointer"
+                      onClick={() => handleDeleteQuestion(question.questionId)}
+                    />
+                  </span>
+                </div>
 
-                  {optionErrors[question.questionId] && (
-                    <p className="text-red-500">
-                      {optionErrors[question.questionId]}
-                    </p>
-                  )}
+                <div className="m-2 font-medium">{`Question ${index}.${id + 1}`}</div>
+
+                <div className="p-10 flex flex-col gap-y-8">
+                  <div>
+                    <input
+                      className="input-bottom"
+                      placeholder="Add a question"
+                      type="text"
+                      value={question?.question}
+                      onChange={(e) =>
+                        setQuestions((prevQuestions) => {
+                          const updatedQuestions = prevQuestions.map((q) => {
+                            if (q.questionId === question.questionId) {
+                              return { ...q, question: e.target.value }
+                            }
+                            return q;
+                          });
+                          return updatedQuestions;
+                        })
+                      }
+                    />
+                    {questionErrors[question.questionId] && (
+                      <p className="text-red-500">
+                        {questionErrors[question.questionId]}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-y-2">
+                    {question?.options.map((option, optionIndex) => {
+                      return (
+                        <div
+                          className="flex items-center gap-x-5"
+                          key={`${question.questionId}.${optionIndex}`}
+                        >
+                          <input
+                            className="cursor-pointer"
+                            type="radio"
+                            name={question.questionId}
+                            value={option.label}
+                            checked={option.isCorrect} // Make sure the correct option is checked
+                            onChange={(e) =>
+                              setQuestions((prevQuestions) => {
+                                const updatedQuestions = prevQuestions.map(
+                                  (q) => {
+                                    if (q.questionId === question.questionId) {
+                                      const updatedOptions = q.options.map(
+                                        (o, idx) => {
+                                          if (idx === optionIndex) {
+                                            return {
+                                              ...o,
+                                              isCorrect: e.target.checked,
+                                            }
+                                          } else {
+                                            // Uncheck the other options when selecting a new one
+                                            return { ...o, isCorrect: false }
+                                          }
+                                        }
+                                      );
+                                      return {
+                                        ...q,
+                                        options: updatedOptions,
+                                        answer: e.target.checked
+                                          ? option.label
+                                          : q.answer,
+                                      }
+                                    }
+                                    return q
+                                  }
+                                )
+                                return updatedQuestions
+                              })
+                            }
+                          />
+                          <input
+                            className="input-bottom w-1/2"
+                            type="text"
+                            value={option.label}
+                            placeholder="Add an option"
+                            onChange={(e) =>
+                              setQuestions((prevQuestions) => {
+                                const updatedQuestions = prevQuestions.map(
+                                  (q) => {
+                                    if (q.questionId === question.questionId) {
+                                      const updatedOptions = q.options.map(
+                                        (o, idx) => {
+                                          if (idx === optionIndex) {
+                                            return {
+                                              ...o,
+                                              label: e.target.value,
+                                            }
+                                          }
+                                          return o
+                                        }
+                                      );
+                                      return { ...q, options: updatedOptions }
+                                    }
+                                    return q
+                                  }
+                                );
+                                return updatedQuestions
+                              })
+                            }
+                          />
+                          <AiFillDelete
+                            size={17}
+                            color="gray"
+                            className="cursor-pointer"
+                            onClick={() =>
+                              handleDeleteOption(question.questionId, optionIndex)
+                            }
+                          />
+                          {optionErrors[
+                            `${question.questionId}.${optionIndex}`
+                          ] && (
+                              <p className="text-red-500">
+                                {
+                                  optionErrors[
+                                  `${question.questionId}.${optionIndex}`
+                                  ]
+                                }
+                              </p>
+                            )}
+                        </div>
+                      );
+                    })}
+
+                    {question.options.length < 5 && (
+                      <AiFillPlusCircle
+                        size={17}
+                        color="gray"
+                        className="cursor-pointer mt-2"
+                        onClick={() => handleAddOption(question.questionId)}
+                      />
+                    )}
+
+                    {optionErrors[question.questionId] && (
+                      <p className="text-red-500">
+                        {optionErrors[question.questionId]}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>

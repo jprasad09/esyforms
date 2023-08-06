@@ -55,9 +55,10 @@ const ComprehensionRenderer = ({ _id, questionNumber, comprehensionField, label,
         <div className='flex flex-col gap-y-5'>
           {
             comprehensionField && comprehensionField?.questions &&
-            comprehensionField?.questions?.map(({ _id, questionId, question, options }) => {
+            comprehensionField?.questions?.map(({ _id, questionId, question, options }, index) => {
+              const qid = `${questionId.split(".")[0]}.${index+1}`
               return <div key={_id} className='flex flex-col border-t-2 border-gray-200'>
-                <span className='my-2 text-sm font-bold'>Question {questionId}</span>
+                <span className='my-2 text-sm font-bold'>Question {qid}</span>
                 <p className='text-lg my-1'>{question}</p>
                 <div>
                   {

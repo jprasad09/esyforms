@@ -85,7 +85,7 @@ const FillForm = () => {
                     navigate('/')
                 }
             }catch(error){
-                alert('Something went wrong')
+                alert('This email id has submitted response already')
             }
 
         }
