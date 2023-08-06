@@ -162,14 +162,14 @@ const CategorizeBuilder = ({ uniqueId }) => {
 
           <div className='flex items-center gap-x-2'>
             <span className='font-medium'>Categories</span>
-            <span>
-              <AiFillPlusCircle
-                size={20}
-                color='gray'
-                className='cursor-pointer'
-                onClick={addCategory}
-              />
-            </span>
+              <span>
+                <AiFillPlusCircle
+                  size={20}
+                  color='gray'
+                  className='cursor-pointer'
+                  onClick={addCategory}
+                />
+              </span>
           </div>
 
           <div className='flex flex-col gap-y-1'>
@@ -180,18 +180,20 @@ const CategorizeBuilder = ({ uniqueId }) => {
                     <input
                       type="text"
                       placeholder='Category'
-                      className='input-bottom w-52'
+                      className='input-box w-52'
                       value={category.label}
                       onChange={(e) => handleCategoryChange(index, e.target.value)}
                     />
-                    <span>
-                      <AiFillDelete
-                        size={20}
-                        color='gray'
-                        className='cursor-pointer'
-                        onClick={() => deleteCategory(index)}
-                      />
-                    </span>
+                    {categories.length > 2 ? (
+                      <span>
+                        <AiFillDelete
+                          size={20}
+                          color='gray'
+                          className='cursor-pointer'
+                          onClick={() => deleteCategory(index)}
+                        />
+                      </span>
+                    ): <span className='relative w-5 h-10'></span>}
                     {categoryErrors[index] && <span className="text-red-500">{categoryErrors[index]}</span>}
                   </div>
                 )
@@ -206,34 +208,36 @@ const CategorizeBuilder = ({ uniqueId }) => {
           <div className='flex items-center'>
             <div className='flex items-center gap-x-2'>
               <span className='font-medium'>Option</span>
-              <span>
-                <AiFillPlusCircle
-                  size={20}
-                  color='gray'
-                  className='cursor-pointer'
-                  onClick={addOption}
-                />
-              </span>
-
+                <span>
+                  <AiFillPlusCircle
+                    size={20}
+                    color='gray'
+                    className='cursor-pointer'
+                    onClick={addOption}
+                  />
+                </span>
             </div>
           </div>
 
-          <div>
+          <div className='flex flex-col gap-y-1'>
             {
               options?.map((option, index) => {
                 return (
-                  <div key={index} className='flex items-center gap-x-10'>
+                  <div key={index} className='flex items-start gap-x-10'>
                     <div className='flex items-center gap-x-10'>
                       <div className='flex flex-col gap-y-1'>
                         <input
                           type="text"
-                          className='input-bottom w-52'
+                          className='input-box w-52'
                           placeholder='Option'
                           value={option.label}
                           onChange={(e) => handleOptionChange(index, e.target.value)}
                         />
-                        {optionErrors[index] && <span className="text-red-500 text-sm">{optionErrors[index]}</span>}
+                        {optionErrors[index] && <span className="text-red-500 text-sm mb-2">{optionErrors[index]}</span>}
                       </div>
+                    </div>
+                    <div className='my-2'>
+                    {options.length > 2 ? (
                       <span>
                         <AiFillDelete
                           size={20}
@@ -242,8 +246,9 @@ const CategorizeBuilder = ({ uniqueId }) => {
                           onClick={() => deleteOption(index)}
                         />
                       </span>
+                    ): <span className='relative w-4 h-10'></span> }
                     </div>
-                    <div>
+                    <div className='my-2'>
                       <select
                         name="category"
                         className={`cursor-pointer rounded-md border-gray-200 border-2 w-36 duration-300 ${belongsToErrors[index] ? 'border-red-500' : ''}`}

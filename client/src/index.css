@@ -19,7 +19,11 @@
   }
 
   .input-bottom{
-    @apply w-full p-2  pb-1 text-base text-black border-b border-gray-400 outline-none focus:border-cyan-200
+    @apply w-full p-2 pb-1 text-base text-black border-b border-gray-400 outline-none focus:border-cyan-200
+  }
+
+  .input-box{
+    @apply w-full p-2 text-base rounded-sm text-black border border-gray-400 outline-none focus:border-cyan-200
   }
 
 }

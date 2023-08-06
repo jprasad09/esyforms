@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { v4 as uuidv4 } from "uuid"
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -47,6 +47,14 @@ const CreateForm = () => {
       })
     }
   }
+
+  useEffect(() => {
+    if(formTitle){
+      setError(prevState => false)
+    }else{
+      setError(prevState => true)
+    }
+  }, [formTitle])
 
   const handleCreateForm = async() => {
 
@@ -105,7 +113,7 @@ const CreateForm = () => {
               onChange={(e) => setFormTitle(e.target.value)}
             />
 
-            { error && <p className='text-pink-500'>Title is required</p> }
+            { error && <p className='text-red-500 text-lg'>Title is required</p> }
 
           </div>
           <div className='flex items-center gap-x-5 w-1/2 py-5'>

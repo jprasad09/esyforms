@@ -270,7 +270,7 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
                             type="radio"
                             name={question.questionId}
                             value={option.label}
-                            checked={option.isCorrect} // Make sure the correct option is checked
+                            checked={option.isCorrect}
                             onChange={(e) =>
                               setQuestions((prevQuestions) => {
                                 const updatedQuestions = prevQuestions.map(
@@ -305,7 +305,7 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
                             }
                           />
                           <input
-                            className="input-bottom w-1/2"
+                            className="input-box w-1/2"
                             type="text"
                             value={option.label}
                             placeholder="Add an option"
@@ -334,14 +334,17 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
                               })
                             }
                           />
-                          <AiFillDelete
-                            size={17}
-                            color="gray"
-                            className="cursor-pointer"
-                            onClick={() =>
-                              handleDeleteOption(question.questionId, optionIndex)
-                            }
-                          />
+                          {
+                            question?.options.length > 2 ? (
+                              <AiFillDelete
+                              size={17}
+                              color="gray"
+                              className="cursor-pointer"
+                              onClick={() =>
+                                handleDeleteOption(question.questionId, optionIndex)
+                              }
+                            />
+                            ) : <span className='relative w-4 h-10'></span>}
                           {optionErrors[
                             `${question.questionId}.${optionIndex}`
                           ] && (
