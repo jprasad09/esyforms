@@ -12,7 +12,7 @@ function App() {
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
-          <Route exact path="/form/fill/:id" element={<FillForm />} />
+          <Route exact path="/form/:id" element={<FillForm />} />
           <Route exact path="/form/create" element={<CreateForm />} />
           <Route exact path="/" element={<FormListing />} />
         </Routes>
