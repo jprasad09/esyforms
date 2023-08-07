@@ -203,10 +203,12 @@ const ClozeBuilder = ({ uniqueId }) => {
         if (cloudData?.data?.url) {
           setImgUrl(prevState => cloudData?.data?.url)
           setUploadStatus(prevState => 'idle')
+          toast.success("Image uploaded successfully")
         }
 
       } catch (error) {
         setUploadStatus('error')
+        toast.error("Image upload failed")
       }
 
     }

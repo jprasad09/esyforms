@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { v4 as uuidv4 } from "uuid"
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Oval } from 'react-loader-spinner'
 
@@ -148,6 +148,11 @@ const CreateForm = () => {
 
   return (
     <>
+
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+      />
 
       <header>
         <Navbar />

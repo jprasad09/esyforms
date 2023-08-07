@@ -92,7 +92,7 @@ const FillForm = () => {
                 }
             } catch (error) {
                 setLoading(prevState => false)
-                toast.error("This email id has submitted response already")
+                toast.error("Error submitting response")
             }
 
         }
