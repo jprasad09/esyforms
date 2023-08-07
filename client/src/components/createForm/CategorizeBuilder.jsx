@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { AiFillPlusCircle, AiFillDelete } from "react-icons/ai"
 import { useDispatch } from 'react-redux'
 
+import axios from '../../api/axios'
 import { addQuestion, setQuestionsValidity } from '../../store/formBuilderSlice'
 
 const CategorizeBuilder = ({ uniqueId }) => {
@@ -13,6 +14,9 @@ const CategorizeBuilder = ({ uniqueId }) => {
   const [categoryErrors, setCategoryErrors] = useState([])
   const [optionErrors, setOptionErrors] = useState([])
   const [belongsToErrors, setBelongsToErrors] = useState([])
+  const [img, setImg] = useState('')
+  const [uploadStatus, setUploadStatus] = useState('idle')
+  const [imgUrl, setImgUrl] = useState('')
 
   const dispatch = useDispatch()
 
@@ -91,6 +95,34 @@ const CategorizeBuilder = ({ uniqueId }) => {
     })
   }
 
+  const handleImageUpload = async() => {
+
+    if (img) {
+
+      setUploadStatus(prevState => 'loading')
+
+      const imgData = new FormData()
+
+      imgData.append('file', img)
+      imgData.append('upload_preset', import.meta.env.VITE_REACT_APP_CLOUD_UPLOAD_PRESET)
+      imgData.append('cloud_name', import.meta.env.VITE_REACT_APP_CLOUD_NAME)
+
+      try {
+        const cloudData = await axios.post(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_REACT_APP_CLOUD_NAME}/image/upload`, imgData)
+
+        if (cloudData?.data?.url) {
+          setImgUrl(prevState => cloudData?.data?.url)
+          setUploadStatus(prevState => 'idle')
+        }
+
+      } catch (error) {
+        setUploadStatus('error')
+      }
+
+    }
+
+  }
+
   useEffect(() => {
     const isCategoryValid = categories.every((category) => category.label.trim() !== '')
     const isOptionValid = options.every((option) => option.label.trim() !== '')
@@ -115,6 +147,7 @@ const CategorizeBuilder = ({ uniqueId }) => {
         updatedField: {
           label: questionTitle,
           type: "categorize",
+          fieldImg: imgUrl,
           categorizeField: {
             categories: categories.map((category) => ({
               label: category.label,
@@ -134,24 +167,31 @@ const CategorizeBuilder = ({ uniqueId }) => {
     }else{
       dispatch(setQuestionsValidity({ id: uniqueId, status: false }))
     }
-  }, [isValid, categories, options, questionTitle])
+  }, [isValid, categories, options, questionTitle, imgUrl])
 
   return (
-    <div className='flex flex-col gap-y-8'>
+    <div className='flex flex-col gap-y-10'>
 
-      <div className='flex items-center justify-between'>
+      <div className='flex md:flex-row flex-col gap-y-3 items-center justify-between'>
 
         <input
-          className='input-bottom w-1/3'
+          className='input-bottom md:w-1/3'
           type="text"
           placeholder='Add Question (Optional)'
           value={questionTitle}
           onChange={(e) => setQuestionTitle(e.target.value)}
         />
 
-        <div className='flex items-center gap-x-1 w-1/2 py-5'>
-          <label className='text-sm'>Question Image (optional)</label>
-          <input type="file" name="categorizeImg" className='input-file' />
+        <div className='flex justify-end items-center gap-x-1 md:w-1/2 py-5'>
+          <input type="file" name="categorizeImg" className='input-file' 
+            onChange={(e) => setImg(e.target.files[0])}
+          />
+          <button
+              onClick={handleImageUpload}
+              className='rounded-lg bg-gray-200 hover:bg-gray-300 font-semibold px-3 py-1 transition duration-700'
+            >
+              {uploadStatus === 'loading' ? 'Uploading' : 'Upload Image'}
+            </button>
         </div>
 
       </div>
@@ -176,7 +216,7 @@ const CategorizeBuilder = ({ uniqueId }) => {
             {
               categories?.map((category, index) => {
                 return (
-                  <div key={index} className='flex items-center gap-x-10'>
+                  <div key={index} className='flex items-center md:gap-x-10'>
                     <input
                       type="text"
                       placeholder='Category'
@@ -223,7 +263,7 @@ const CategorizeBuilder = ({ uniqueId }) => {
             {
               options?.map((option, index) => {
                 return (
-                  <div key={index} className='flex items-start gap-x-10'>
+                  <div key={index} className='flex items-start md:gap-x-10 gap-x-2'>
                     <div className='flex items-center gap-x-10'>
                       <div className='flex flex-col gap-y-1'>
                         <input

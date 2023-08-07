@@ -6,11 +6,11 @@
 
 @layer components {
   .btn-primary{
-    @apply rounded-lg bg-cyan-200 hover:bg-cyan-300 text-lg font-semibold px-5 py-1 transition duration-700;
+    @apply rounded-lg bg-cyan-200 hover:bg-cyan-300 text-lg font-semibold px-5 py-1 transition duration-700
   }
 
   .input-file{
-    @apply block w-full text-sm text-slate-500 
+    @apply block text-sm text-slate-500 
     file:mr-1 file:py-2 file:px-4
     file:rounded-full file:border-0
     file:text-sm file:font-semibold

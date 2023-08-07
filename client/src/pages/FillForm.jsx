@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { Oval } from 'react-loader-spinner'
 
 import axios from '../api/axios'
 import logo from '../assets/logo.jpg'
@@ -9,18 +12,19 @@ import ComprehensionRenderer from '../components/fillForm/ComprehensionRenderer'
 
 const FillForm = () => {
 
-    const [ form, setForm ] = useState({})
-    const [ formError, setFormError ] = useState(false)
+    const [form, setForm] = useState({})
+    const [formError, setFormError] = useState(false)
+    const [loading, setLoading] = useState(false)
 
-    const [ emailError, setEmailError ] = useState(false)
+    const [emailError, setEmailError] = useState(false)
 
     const [categorizeCompletionStatus, setCategorizeCompletionStatus] = useState({})
     const [clozeCompletionStatus, setClozeCompletionStatus] = useState({})
     const [comprehensionCompletionStatus, setComprehensionCompletionStatus] = useState({})
 
     const { id } = useParams()
-    const [ response, setResponse ] = useState({
-        form : id,
+    const [response, setResponse] = useState({
+        form: id,
         email: '',
         categorizeAnswers: [],
         clozeAnswers: [],
@@ -30,17 +34,17 @@ const FillForm = () => {
     const navigate = useNavigate()
 
     const answerStatus = (type, fieldId, status) => {
-        if(type === "Category"){
+        if (type === "Category") {
             setCategorizeCompletionStatus((prevState) => ({
                 ...prevState,
                 [fieldId]: status,
             }))
-        }else if(type === "Cloze"){
+        } else if (type === "Cloze") {
             setClozeCompletionStatus((prevState) => ({
                 ...prevState,
                 [fieldId]: status,
             }))
-        }else if(type === "Comprehension"){
+        } else if (type === "Comprehension") {
             setComprehensionCompletionStatus((prevState) => ({
                 ...prevState,
                 [fieldId]: status,
@@ -55,11 +59,11 @@ const FillForm = () => {
                 [type]: [...prevState[type], data],
             }
         })
-    }    
+    }
 
-    const handleFormSubmit = async() => {
+    const handleFormSubmit = async () => {
 
-        if(!response.email){
+        if (!response.email) {
             setEmailError(true)
         }
 
@@ -76,51 +80,68 @@ const FillForm = () => {
         )
 
 
-        if(response.email && allCategorizeComplete && allClozeComplete && allComprehensionComplete){
-            
-            try{
+        if (response.email && allCategorizeComplete && allClozeComplete && allComprehensionComplete) {
+
+            try {
+                setLoading(prevState => true)
                 const res = await axios.post(`responses`, response)
-                if(res.status === 201){
-                    alert('Response submitted successfully')
+                if (res.status === 201) {
+                    setLoading(prevState => false)
                     navigate('/')
+                    toast.success("Response submitted successfully")
                 }
-            }catch(error){
-                alert('This email id has submitted response already')
+            } catch (error) {
+                setLoading(prevState => false)
+                toast.error("This email id has submitted response already")
             }
 
         }
     }
 
     useEffect(() => {
-        
-        const fetchForm = async() => {
-            try{
+
+        setLoading(prevState => true)
+        const fetchForm = async () => {
+            try {
                 const { data } = await axios.get(`forms/${id}`)
                 setForm(prevState => data)
-            }catch(error){
+                setLoading(prevState => false)
+            } catch (error) {
                 setFormError(prevState => true)
+                setLoading(prevState => false)
             }
         }
-        
+
         fetchForm()
     }, [])
 
-    if(formError) return <h2 className='text-center font-bold text-rose-900 my-5'>Error Fetching Form...</h2>
-    
+    if (formError) return <h2 className='text-center font-bold text-rose-900 my-5'>Error Fetching Form...</h2>
+
+    if (loading){
+        return <span className='flex items-center justify-center h-screen'>
+            <Oval
+                height={50}
+                width={50}
+                color='#8be6f0'
+                secondaryColor="#b2f0f7"
+            />
+        </span>
+    }
+
     const { title, formImg, formDescription, fields } = form
 
     return (
         <section>
 
-            <main className='flex items-center shadow-lg mx-20 my-10 px-10 py-2 gap-x-10'>
+            <main className='flex items-center shadow-lg mx-5 sm:mx-20 my-10 px-10 py-2 gap-x-10'>
                 {
-                    formImg && 
-                    <img className='w-20' src={formImg} alt="Form Image" /> || 
-                    <img className='w-20' src={logo} alt="Form Image" />
+                    formImg &&
+                    <img className='w-20' src={formImg} loading="lazy" alt="Form Image" /> ||
+                    <img className='w-20' src={logo} loading="lazy" alt="Form Image" />
                 }
 
                 <div className='flex flex-col gap-y-1 items-start justify-center'>
-                    <p className='text-2xl font-semibold'>{ title ?? 'Form' }</p>
+                    <p className='text-2xl font-semibold'>{title ?? 'Form'}</p>
                     {
                         formDescription && <p className='text-sm'>{formDescription}</p>
                     }
@@ -128,31 +149,31 @@ const FillForm = () => {
 
             </main>
 
-            <div className='flex flex-col gap-y-10 mx-20 my-10 p-10 shadow-md'>
+            <div className='flex flex-col gap-y-10 mx-5 sm:mx-20 my-10 p-10 shadow-md'>
                 {
-                    fields && fields.length > 0 ? 
-                    fields.map((field, index) => {
-                        let questionNumber = index + 1
-                        if(field.type === 'categorize') return <CategorizeRenderer key={field._id} {...field} questionNumber={questionNumber} setAnswers={setAnswers} answerStatus={answerStatus} />
-                        else if(field.type === 'cloze') return <ClozeRenderer key={field._id} {...field} questionNumber={questionNumber} setAnswers={setAnswers} answerStatus={answerStatus} />
-                        else if(field.type === 'comprehension') return <ComprehensionRenderer key={field._id} questionNumber={questionNumber} {...field} setAnswers={setAnswers} answerStatus={answerStatus} />
-                        else return <p>Invalid question type</p>
-                    }) :
-                    <p>No questions found!</p>
+                    fields && fields.length > 0 ?
+                        fields.map((field, index) => {
+                            let questionNumber = index + 1
+                            if (field.type === 'categorize') return <CategorizeRenderer key={field._id} {...field} questionNumber={questionNumber} setAnswers={setAnswers} answerStatus={answerStatus} />
+                            else if (field.type === 'cloze') return <ClozeRenderer key={field._id} {...field} questionNumber={questionNumber} setAnswers={setAnswers} answerStatus={answerStatus} />
+                            else if (field.type === 'comprehension') return <ComprehensionRenderer key={field._id} questionNumber={questionNumber} {...field} setAnswers={setAnswers} answerStatus={answerStatus} />
+                            else return <p>Invalid question type</p>
+                        }) :
+                        <p>No questions found!</p>
                 }
             </div>
 
-            <div className='flex flex-col shadow-lg mx-20 my-10 px-10 py-5 gap-y-2'>
+            <div className='flex flex-col shadow-lg mx-5 sm:mx-20 my-10 px-10 py-5 gap-y-2'>
                 <label htmlFor="email">Enter your email</label>
-                <input 
-                    className='text-md border-gray-200 border-solid border-2 rounded-md px-2' 
-                    type="email" 
+                <input
+                    className='text-md border-gray-200 border-solid border-2 rounded-md px-2'
+                    type="email"
                     name="email"
                     value={response.email}
                     onChange={(e) => {
-                        if (e.target.value.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)){
+                        if (e.target.value.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
                             setEmailError(prevState => false)
-                          }else{
+                        } else {
                             setEmailError(prevState => true)
                         }
                         setResponse((prevState) => {
@@ -169,8 +190,8 @@ const FillForm = () => {
             </div>
 
             <div className='flex flex-col items-center justify-center mx-2 my-10'>
-                <button 
-                    onClick={handleFormSubmit} 
+                <button
+                    onClick={handleFormSubmit}
                     className={`btn-primary`}
                 >Submit</button>
             </div>

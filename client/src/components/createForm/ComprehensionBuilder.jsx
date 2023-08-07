@@ -3,10 +3,14 @@ import { AiFillPlusCircle, AiFillDelete } from "react-icons/ai"
 import { useDispatch } from "react-redux"
 import { v4 as uuidv4 } from "uuid"
 
+import axios from '../../api/axios'
 import { setQuestionsValidity, addQuestion } from "../../store/formBuilderSlice"
 
 const ComprehensionBuilder = ({ uniqueId, index }) => {
   const [questionTitle, setQuestionTitle] = useState("")
+  const [img, setImg] = useState('')
+  const [uploadStatus, setUploadStatus] = useState('idle')
+  const [imgUrl, setImgUrl] = useState('')
   const [paragraph, setParagraph] = useState("")
   const [paragraphError, setParagraphError] = useState(false)
   const [questions, setQuestions] = useState([
@@ -101,6 +105,35 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
     })
   }
 
+  const handleImageUpload = async () => {
+
+    if (img) {
+
+      setUploadStatus(prevState => 'loading')
+
+      const imgData = new FormData()
+
+      imgData.append('file', img)
+      imgData.append('upload_preset', import.meta.env.VITE_REACT_APP_CLOUD_UPLOAD_PRESET)
+      imgData.append('cloud_name', import.meta.env.VITE_REACT_APP_CLOUD_NAME)
+
+      try {
+        const cloudData = await axios.post(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_REACT_APP_CLOUD_NAME}/image/upload`, imgData)
+
+        if (cloudData?.data?.url) {
+          setImgUrl(prevState => cloudData?.data?.url)
+          setUploadStatus(prevState => 'idle')
+        }
+
+      } catch (error) {
+        setUploadStatus('error')
+      }
+
+    }
+
+  }
+
+
   useEffect(() => {
     dispatch(setQuestionsValidity({ id: uniqueId, status: false }))
   }, [])
@@ -158,6 +191,7 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
         updatedField: {
           label: questionTitle,
           type: "comprehension",
+          fieldImg: imgUrl,
           comprehensionField: {
             paragraph,
             questions
@@ -169,26 +203,34 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
     } else {
       dispatch(setQuestionsValidity({ id: uniqueId, status: false }))
     }
-  }, [paragraph, questions])
+  }, [paragraph, questions, imgUrl])
 
   return (
     <div className="flex flex-col gap-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex md:flex-row flex-col gap-y-3 items-center justify-between">
         <input
-          className="input-bottom w-1/3"
+          className="input-bottom md:w-1/3"
           type="text"
           placeholder="Add Question (Optional)"
           value={questionTitle}
           onChange={(e) => setQuestionTitle(e.target.value)}
         />
-        <div className="flex items-center gap-x-1 w-1/2 py-5">
-          <label className="text-sm">Question Image (optional)</label>
-          <input type="file" name="categorizeImg" className="input-file" />
+        
+        <div className='flex justify-end items-center gap-x-1 md:w-1/2 py-5'>
+          <input type="file" name="categorizeImg" className='input-file' 
+            onChange={(e) => setImg(e.target.files[0])}
+          />
+          <button
+              onClick={handleImageUpload}
+              className='rounded-lg bg-gray-200 hover:bg-gray-300 font-semibold px-3 py-1 transition duration-700'
+            >
+              {uploadStatus === 'loading' ? 'Uploading' : 'Upload Image'}
+            </button>
         </div>
       </div>
 
       <div className="flex flex-col gap-y-10">
-        <div className="flex flex-col gap-y-2 w-2/3">
+        <div className="flex flex-col gap-y-2 md:w-2/3">
           <span>Add a paragraph</span>
           <textarea
             className={`border-2 ${paragraphError ? "border-red-500" : "border-gray-200"
@@ -209,7 +251,7 @@ const ComprehensionBuilder = ({ uniqueId, index }) => {
             return (
               <div
                 key={question.questionId}
-                className="w-2/3 border-2 border-gray-200 rounded-md relative"
+                className="lg:w-2/3 border-2 border-gray-200 rounded-md relative"
               >
                 <div className="absolute top-2 right-2 flex gap-x-2">
                   <span>

@@ -7,7 +7,7 @@ const FormCard = ({ _id, title, fields, createdAt }) => {
     const date = new Date(createdAt).toLocaleString('en-GB', {day:'numeric', month: 'long', year:'numeric'})
 
     return (
-        <div className='flex items-center justify-between mx-20 my-5 p-5 shadow'>
+        <div className='flex flex-col gap-y-5 items-center justify-between mx-20 my-5 p-5 shadow sm:flex-row'>
 
             <div className='flex flex-col'>
                 <span className='text-lg font-semibold'>{title}</span>

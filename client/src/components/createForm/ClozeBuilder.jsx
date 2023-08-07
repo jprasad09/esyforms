@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { AiFillPlusCircle, AiFillDelete, AiOutlineUnderline } from 'react-icons/ai'
 import { useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
+import axios from '../../api/axios'
 import { setQuestionsValidity, addQuestion } from '../../store/formBuilderSlice'
 
 const ClozeBuilder = ({ uniqueId }) => {
   const [questionTitle, setQuestionTitle] = useState('')
   const [paragraph, setParagraph] = useState('')
+  const [img, setImg] = useState('')
+  const [uploadStatus, setUploadStatus] = useState('idle')
+  const [imgUrl, setImgUrl] = useState('')
   const [options, setOptions] = useState([])
   const [selectedUnderline, setSelectedUnderline] = useState(null)
   const [errors, setErrors] = useState({
@@ -131,7 +137,7 @@ const ClozeBuilder = ({ uniqueId }) => {
         // Update the selectedUnderline state with the newly underlined word
         setSelectedUnderline(selectedWord)
       } else {
-        alert('Please select a single word to underline.')
+        toast.warn('Please select a single word to underline')
       }
     }
   }
@@ -179,6 +185,34 @@ const ClozeBuilder = ({ uniqueId }) => {
     return []
   }
 
+  const handleImageUpload = async () => {
+
+    if (img) {
+
+      setUploadStatus(prevState => 'loading')
+
+      const imgData = new FormData()
+
+      imgData.append('file', img)
+      imgData.append('upload_preset', import.meta.env.VITE_REACT_APP_CLOUD_UPLOAD_PRESET)
+      imgData.append('cloud_name', import.meta.env.VITE_REACT_APP_CLOUD_NAME)
+
+      try {
+        const cloudData = await axios.post(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_REACT_APP_CLOUD_NAME}/image/upload`, imgData)
+
+        if (cloudData?.data?.url) {
+          setImgUrl(prevState => cloudData?.data?.url)
+          setUploadStatus(prevState => 'idle')
+        }
+
+      } catch (error) {
+        setUploadStatus('error')
+      }
+
+    }
+
+  }
+
   useEffect(() => {
     dispatch(setQuestionsValidity({ id: uniqueId, status: false }))
   }, [])
@@ -207,17 +241,17 @@ const ClozeBuilder = ({ uniqueId }) => {
       const trimSpaces = (text) => {
         return text.replace(/\s+/g, ' ').trim()
       }
-      
+
       // Get unique underlined words
       const uniqueUnderlinedWords = Array.from(new Set(underlinedWords.map(trimSpaces)))
-      
+
       // Create blanks array without duplicates
       const blanks = uniqueUnderlinedWords.map((word) => {
         const wordsBefore = trimSpaces(paragraph).split(word)[0].split(' ')
         const index = wordsBefore.length - 1
         return { label: trimSpaces(word), index }
       })
-      
+
       // Create correctMapping array without duplicates
       const correctMapping = uniqueUnderlinedWords.map((word) => {
         const wordsBefore = trimSpaces(paragraph).split(word)[0].split(' ')
@@ -231,10 +265,11 @@ const ClozeBuilder = ({ uniqueId }) => {
         updatedField: {
           label: questionTitle,
           type: "cloze",
+          fieldImg: imgUrl,
           clozeField: {
             paragraph: sentence,
             blanks,
-            options: options.map((option) => ({ label: option.label })), 
+            options: options.map((option) => ({ label: option.label })),
             correctMapping
           }
         }
@@ -246,22 +281,29 @@ const ClozeBuilder = ({ uniqueId }) => {
       dispatch(setQuestionsValidity({ id: uniqueId, status: false }))
     }
 
-  }, [paragraph, options, selectedUnderline])
+  }, [paragraph, options, selectedUnderline, , imgUrl])
 
   return (
     <div className='flex flex-col gap-y-8'>
-      <div className='flex items-center justify-between'>
+      <div className='flex md:flex-row flex-col gap-y-3 items-center justify-between'>
         <input
-          className='input-bottom w-1/3'
+          className='input-bottom md:w-1/3'
           type='text'
           placeholder='Add Question (Optional)'
           value={questionTitle}
           onChange={(e) => setQuestionTitle(e.target.value)}
         />
 
-        <div className='flex items-center gap-x-1 w-1/2 py-5'>
-          <label className='text-sm'>Question Image (optional)</label>
-          <input type='file' name='categorizeImg' className='input-file' />
+        <div className='flex justify-end items-center gap-x-1 md:w-1/2 py-5'>
+          <input type="file" name="categorizeImg" className='input-file'
+            onChange={(e) => setImg(e.target.files[0])}
+          />
+          <button
+            onClick={handleImageUpload}
+            className='rounded-lg bg-gray-200 hover:bg-gray-300 font-semibold px-3 py-1 transition duration-700'
+          >
+            {uploadStatus === 'loading' ? 'Uploading' : 'Upload Image'}
+          </button>
         </div>
       </div>
 
@@ -286,7 +328,7 @@ const ClozeBuilder = ({ uniqueId }) => {
               placeholder='Underline the words to convert them into blanks.'
               ref={inputRef}
               type='text'
-              className='input-bottom w-2/3'
+              className='input-bottom md:w-2/3'
               value={paragraph}
               onChange={handleParagraphChange}
             />

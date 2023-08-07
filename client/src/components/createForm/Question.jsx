@@ -18,7 +18,7 @@ const Question = ({ uniqueId, index, onAddQuestion, onDeleteQuestion, disableDel
     }
 
     return (
-        <div className='border-gray-200 border-2 rounded-md mx-20 p-5 my-5'>
+        <div className='flex flex-col gap-y-10 border-gray-200 border-2 rounded-md md:mx-20 p-5 my-5'>
 
             <div className='flex justify-between'>
                 <span>Question {index + 1}</span>

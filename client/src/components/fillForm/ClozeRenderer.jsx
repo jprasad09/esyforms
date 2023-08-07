@@ -3,7 +3,7 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 
 import Option from './Option'
 
-const ClozeRenderer = ({ _id, questionNumber, clozeField, label, setAnswers, answerStatus }) => {
+const ClozeRenderer = ({ _id, questionNumber, fieldImg, clozeField, label, setAnswers, answerStatus }) => {
 
   const [clozeState, setClozeState] = useState({})
   const [error, setError] = useState(false)
@@ -26,25 +26,25 @@ const ClozeRenderer = ({ _id, questionNumber, clozeField, label, setAnswers, ans
 
   const handleDragDrop = (result) => {
     const { destination, source } = result
-  
+
     if (!destination) return
-  
+
     if (destination.droppableId === source.droppableId && destination.index === source.index) return
-  
+
     const updatedState = { ...clozeState }
     const sourceBlank = updatedState[source.droppableId]
     const option = sourceBlank[source.index]
-  
+
     // Determine the destination blank based on the droppableId
     let destinationBlank
-    if(destination.droppableId === 'Option'){
+    if (destination.droppableId === 'Option') {
       destinationBlank = updatedState.Option
-    }else{
+    } else {
       destinationBlank = updatedState[destination.droppableId]
-  
+
       // Check if the destination blank is already occupied
       const isDestinationOccupied = destinationBlank.length > 0
-  
+
       // If the destination blank is already occupied, swap the options
       if (isDestinationOccupied) {
         const destinationOption = destinationBlank[0]
@@ -56,7 +56,7 @@ const ClozeRenderer = ({ _id, questionNumber, clozeField, label, setAnswers, ans
         destinationBlank.push(option)
       }
     }
-  
+
     setClozeState(updatedState)
   }
 
@@ -66,44 +66,50 @@ const ClozeRenderer = ({ _id, questionNumber, clozeField, label, setAnswers, ans
       isInitialRender.current = false
       return
     }
-    
+
     // Check if any blank is empty
     const isAnyBlankEmpty = Object.keys(clozeState)
       .filter((key) => key !== 'Option')
       .some((key) => clozeState[key]?.length === 0)
-  
+
     // If any blank is empty, set the error state and completion status to false
-    if(isAnyBlankEmpty){
+    if (isAnyBlankEmpty) {
       setError(true)
       answerStatus("Cloze", _id, false)
-    }else{
+    } else {
       setError(false)
       answerStatus("Cloze", _id, true)
-  
+
       const selections = Object.entries(clozeState)
-      .filter(([category]) => category !== 'Option')
-      .flatMap(([category, options], blankIndex) =>
-        options.map((option) => ({
-          blankIndex,
-          option,
-        }))
-      )
+        .filter(([category]) => category !== 'Option')
+        .flatMap(([category, options], blankIndex) =>
+          options.map((option) => ({
+            blankIndex,
+            option,
+          }))
+        )
 
       const data = {
         fieldId: _id,
         selections,
       }
-  
+
       setAnswers('clozeAnswers', data)
     }
   }, [clozeState])
-  
+
   return (
     <DragDropContext onDragEnd={handleDragDrop}>
 
       <div className='flex flex-col gap-y-7 border-gray-200 border-solid border-2 rounded px-5 py-3'>
 
-        <p className='my-2 text-lg font-bold'>Question {questionNumber}</p>
+        <div className='flex justify-between'>
+          <p className='my-2 text-lg font-bold'>Question {questionNumber}</p>
+          {
+            fieldImg &&
+            <img className='border-2 border-gray-800 rounded-lg w-80' src={fieldImg} loading="lazy" alt="Question Image" />
+          }
+        </div>
 
         <p>{label || 'Fill in the blanks'}</p>
 
@@ -112,7 +118,7 @@ const ClozeRenderer = ({ _id, questionNumber, clozeField, label, setAnswers, ans
           <Droppable droppableId="Option">
             {(provided, snapshot) => (
               <div
-                className='flex gap-x-3 self-center'
+                className='flex sm:flex-row flex-col gap-x-3 self-center'
                 ref={provided.innerRef}
                 {...provided.droppableProps} >
                 {clozeState['Option']?.map((option, index) => (
@@ -123,7 +129,7 @@ const ClozeRenderer = ({ _id, questionNumber, clozeField, label, setAnswers, ans
             )}
           </Droppable>
 
-          <div className='flex items-center gap-1'>
+          <div className='flex flex-wrap items-center gap-1'>
             {
               clozeField?.paragraph.split(' ').map((word, index) => {
                 const blankIndex = clozeField?.blanks.findIndex((blank) => blank.index === index)
