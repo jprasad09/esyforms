@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { AiFillPlusCircle, AiFillDelete, AiOutlineUnderline } from 'react-icons/ai'
 import { useDispatch } from 'react-redux'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 
 import axios from '../../api/axios'
 import { setQuestionsValidity, addQuestion } from '../../store/formBuilderSlice'
@@ -137,7 +135,7 @@ const ClozeBuilder = ({ uniqueId }) => {
         // Update the selectedUnderline state with the newly underlined word
         setSelectedUnderline(selectedWord)
       } else {
-        toast.warn('Please select a single word to underline')
+        alert('Please select a single word to underline')
       }
     }
   }
@@ -203,12 +201,10 @@ const ClozeBuilder = ({ uniqueId }) => {
         if (cloudData?.data?.url) {
           setImgUrl(prevState => cloudData?.data?.url)
           setUploadStatus(prevState => 'idle')
-          toast.success("Image uploaded successfully")
         }
 
       } catch (error) {
         setUploadStatus('error')
-        toast.error("Image upload failed")
       }
 
     }

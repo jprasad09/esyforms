@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { AiFillPlusCircle, AiFillDelete } from "react-icons/ai"
 import { useDispatch } from 'react-redux'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 
 import axios from '../../api/axios'
 import { addQuestion, setQuestionsValidity } from '../../store/formBuilderSlice'
@@ -115,12 +113,10 @@ const CategorizeBuilder = ({ uniqueId }) => {
         if (cloudData?.data?.url) {
           setImgUrl(prevState => cloudData?.data?.url)
           setUploadStatus(prevState => 'idle')
-          toast.success("Image uploaded successfully")
         }
 
       } catch (error) {
         setUploadStatus('error')
-        toast.error("Image upload failed")
       }
 
     }

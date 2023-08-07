@@ -7,7 +7,7 @@ import ComprehensionBuilder from './ComprehensionBuilder'
 
 const Question = ({ uniqueId, index, onAddQuestion, onDeleteQuestion, disableDelete }) => {
 
-    const [ questionType, setQuestionType ] = useState('Categorize')
+    const [questionType, setQuestionType] = useState('Categorize')
 
     const addQuestionBelow = () => {
         onAddQuestion(index)
@@ -19,7 +19,7 @@ const Question = ({ uniqueId, index, onAddQuestion, onDeleteQuestion, disableDel
 
     return (
         <div className='flex flex-col gap-y-10 border-gray-200 border-2 rounded-md md:mx-20 p-5 my-5'>
-
+            
             <div className='flex justify-between'>
                 <span>Question {index + 1}</span>
 
@@ -35,18 +35,18 @@ const Question = ({ uniqueId, index, onAddQuestion, onDeleteQuestion, disableDel
                     </select>
 
                     <span>
-                        <AiFillPlusCircle 
-                            size={20} 
-                            color='gray' 
+                        <AiFillPlusCircle
+                            size={20}
+                            color='gray'
                             className='cursor-pointer'
-                            onClick={addQuestionBelow} 
+                            onClick={addQuestionBelow}
                         />
                     </span>
 
                     <span>
-                        <AiFillDelete 
-                            size={20} 
-                            color='gray' 
+                        <AiFillDelete
+                            size={20}
+                            color='gray'
                             className='cursor-pointer'
                             onClick={disableDelete ? null : handleDeleteQuestion}
                         />
@@ -59,8 +59,8 @@ const Question = ({ uniqueId, index, onAddQuestion, onDeleteQuestion, disableDel
             <div>
                 {
                     questionType && questionType === "Categorize" ? <CategorizeBuilder uniqueId={uniqueId} /> :
-                    questionType === "Cloze" ? <ClozeBuilder uniqueId={uniqueId} /> :
-                    questionType === "Comprehension" ? <ComprehensionBuilder uniqueId={uniqueId} index={index + 1}/> : null
+                        questionType === "Cloze" ? <ClozeBuilder uniqueId={uniqueId} /> :
+                            questionType === "Comprehension" ? <ComprehensionBuilder uniqueId={uniqueId} index={index + 1} /> : null
                 }
             </div>
 
