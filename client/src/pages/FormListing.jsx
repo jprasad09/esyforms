@@ -57,9 +57,12 @@ const FormListing = () => {
                             :
                             <main>
                                 {
-                                    forms.map((form) => {
-                                        return <FormCard key={form._id} {...form} />
-                                    })
+                                    forms ?
+                                        forms?.map((form) => {
+                                            return <FormCard key={form._id} {...form} />
+                                        })
+                                        :
+                                        <p className='flex items-center justify-center my-10'>No forms to show</p>
                                 }
                             </main>
 
