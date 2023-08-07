@@ -17,7 +17,7 @@ const FormCard = ({ _id, title, fields, createdAt }) => {
             <div className='flex gap-x-3 items-center'>
                 <span>{fields?.length ?? `No`} Questions</span>
                 <Link 
-                    to={`/form/fill/${_id}`}
+                    to={`/form/${_id}`}
                     target='_blank'
                     rel="noreferrer"
                     title='View' 
