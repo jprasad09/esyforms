@@ -1,0 +1,29 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "client/package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "client/dist"
+            }
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(favicon.ico|robots.txt)",
+            "headers": {
+                "Cache-Control": "public, max-age=604800, must-revalidate"
+            },
+            "dest": "/client/dist/$1"
+        },
+        {
+            "src": "/client/(.*)",
+            "dest": "/client/dist/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/client/dist/index.html"
+        }
+    ]
+}
